@@ -70,13 +70,17 @@ class JupyterD3(Magics):
     """
 
     @line_magic
-    def lmagic(self):
+    def lmagic(self, line):
         """Execute line as d3 command and displays output."""
 
     @cell_magic
-    def cmagic(self):
+    def cmagic(self, line, cell):
         """Execute current cell as d3 script and displays output."""
 
     @line_cell_magic
-    def lcmagic(self):
+    def lcmagic(self, line, cell=None):
         """Syntactic sugar which can be used as both cell and line magic."""
+        if cell is None:
+            return self.lmagic(line)
+
+        return self.cmagic(line, cell)
