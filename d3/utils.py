@@ -24,6 +24,9 @@
 """Common utilities for IPython operations."""
 
 import json
+import sys
+
+from . import config
 
 
 _IPYTHON_VARS = {'In', 'Out'}

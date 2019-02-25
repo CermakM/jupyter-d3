@@ -21,15 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""d3.js Jupyter notebook magic to execute d3 scripts in Jupyter notebooks."""
+"""d3.js Jupyter magic to execute d3 scripts in Jupyter notebooks."""
 
 
 __name__ = "d3"
 __version__ = "0.1.0"
 
-
-from string import Template
-from textwrap import dedent
 
 from IPython.core.magic import cell_magic
 from IPython.core.magic import line_magic
@@ -38,19 +35,8 @@ from IPython.core.magic import magics_class
 from IPython.core.magic import Magics
 from IPython.core.magic import needs_local_scope
 
-from IPython.core.display import display, Javascript
-
-from require import require
-
-
-_LIB_D3 = 'https://d3js.org/d3.v5.min'
-_LIB_D3_HIERARCHY = 'https://d3js.org/d3-hierarchy.v1.min'
-
-
-require.config({
-    'd3': _LIB_D3,
-    'd3-hierarchy': _LIB_D3_HIERARCHY
-})
+from .d3 import d3
+from .utils import sanitize_namespace
 
 
 @magics_class
@@ -100,65 +86,23 @@ class D3Magic(Magics):
         if cell is None:
             return self.lmagic(line, local_ns=local_ns)
 
-        return self.cmagic(line, cell)
+        return d3(cell, **sanitize_namespace(self.shell.user_ns))
 
     @cell_magic
     def cmagic(self, line, cell, **_kwargs):
         """Execute current cell as d3 script and displays output."""
         _ = line  # ignore
 
-        parsed_script = self.parse_script(cell)
-
-        return display(Javascript(parsed_script))
+        return d3(cell, **sanitize_namespace(self.shell.user_ns))
 
     @needs_local_scope
     @line_magic
     def lmagic(self, line, local_ns=None, **_kwargs):
         """Execute line as d3 command and displays output."""
-        self.shell.user_ns.update(local_ns or dict())
+        user_ns = self.shell.user_ns
+        user_ns = user_ns.update(local_ns or dict())
 
-        parsed_script = self.parse_script(line)
-
-        return display(Javascript(parsed_script))
-
-    def parse_script(self, script: str) -> str:
-        """Parse the JS script and returns string template."""
-        d3_template = D3Template(script)
-
-        return self.substitute(d3_template)
-
-    def substitute(self, template: "D3Template", safe_substitute=True) -> str:
-        """Substitute Python template variables."""
-        if safe_substitute:
-            script = template.safe_substitute(**self.shell.user_ns)
-        else:
-            script = template.substitute(**self.shell.user_ns)
-
-        return script
-
-
-class D3Template(Template):
-    """Custom d3 string template."""
-
-    delimiter = "$$"
-
-    def __init__(self, script: str):
-        """Wrap the script in `require` function and instantiate template."""
-
-        libraries = ', '.join(
-            [f"'{lib}'" for lib in require.loaded_libraries.keys()]
-        )
-        wrapped_script = """
-            require([{libs}], function ({args}) {{
-                
-                {script}
-            
-            }});
-        """.format(libs=libraries,
-                   args=libraries.replace("'", '').replace('-', '_'),
-                   script=script)
-
-        super().__init__(dedent(wrapped_script))
+        return d3(line, **sanitize_namespace(user_ns))
 
 
 def load_ipython_extension(ipython):

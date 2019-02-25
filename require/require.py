@@ -21,7 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""d3.js Jupyter notebook magic to execute d3 scripts in Jupyter notebooks."""
+"""Module for managing linked JavaScript Libraries via requireJS."""
 
 from string import Template
 from textwrap import dedent
