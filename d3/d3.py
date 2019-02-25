@@ -35,7 +35,7 @@ from require import require
 
 require.config({
     'd3': config.defaults.d3,
-    'd3_hierarchy': config.defaults.d3_hierarchy
+    'd3-hierarchy': config.defaults.d3_hierarchy
 })
 
 
@@ -51,11 +51,45 @@ class D3Template(Template):
             [f"'{lib}'" for lib in require.loaded_libraries.keys()]
         )
         wrapped_script = """
-            require([{libs}], function ({args}) {{
+            try {{
+                    
+                console.log("Checking required libraries: ", {libs});
                 
-                {script}
+                [{libs}].forEach( lib => {{
+                
+                    let is_defined = require.defined(lib);
+                    console.log(`Checking library: ${{lib}}`, is_defined ? '✓' : 'x');
+                    
+                    if (!is_defined) {{
+                        // throw
+                        throw new Error(`RequireError: Requirement could not be satisfied: '${{lib}}'.`);
+                    }}
+                    
+                }});
             
-            }});
+                require([{libs}], function ({args}) {{
+                
+                    // execute the script
+                    {script}
+                        
+                }});
+                
+            }} catch(err) {{
+            
+                // append stack trace to the cell output element
+                let div = document.createElement('div');
+                
+                div = $('<div/>')
+                    .addClass('js-error')
+                    .html(err.stack.replace(/\sat/g, '<br>\tat') + '<hr>');
+                
+                $(element).append(div);
+                
+                // re-throw
+                throw err;
+                    
+            }}
+            
         """.format(libs=libraries,
                    args=libraries.replace("'", '').replace('-', '_'),
                    script=script)
