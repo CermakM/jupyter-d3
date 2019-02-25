@@ -28,12 +28,16 @@ __name__ = "require"
 __version__ = "0.1.0"
 
 
+from IPython.core.magic import cell_magic
 from IPython.core.magic import line_magic
 from IPython.core.magic import magics_class
 from IPython.core.magic import Magics
 from IPython.core.magic import needs_local_scope
 
 from .require import RequireJS
+from .require import link_css, link_js
+from .require import load_style, load_script
+
 
 require = RequireJS()
 require.__doc__ = RequireJS.config.__doc__
@@ -62,6 +66,30 @@ class RequireJSMagic(Magics):
             .split(sep=' ')
 
         return require(lib, path)
+
+    @line_magic
+    def link_css(self, line: str):
+        """Link CSS stylesheet."""
+        return link_css(line)
+
+    @line_magic
+    def link_js(self, line: str):
+        """Link JavaScript library."""
+        return link_js(line)
+
+    @cell_magic
+    def load_style(self, line: str, cell: str):
+        """Create new style element and add it to the page."""
+        _ = line  # ignore
+
+        return load_style(cell)
+
+    @cell_magic
+    def load_script(self, line: str, cell: str):
+        """Create new script element and add it to the page."""
+        _ = line  # ignore
+
+        return load_script(cell)
 
 
 def load_ipython_extension(ipython):
