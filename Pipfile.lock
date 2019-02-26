@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "82d29e4d9044d00ea08d2ec1816173bb51c09014b8c1e091ddc365154e6ef782"
+            "sha256": "1fa3f8c81d0fda855bc1b099a7acf3565578910ee963665447b37c60b839ef5a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -95,6 +95,11 @@
                 "sha256:e8218dd399a61674745138520d0d4cf2621d7e032439341bc3f647bff125818d"
             ],
             "version": "==2.3.1"
+        },
+        "require": {
+            "editable": true,
+            "git": "https://github.com/CermakM/jupyter-require",
+            "ref": "2dde03c08770ac686fea6587443efe5fb341f318"
         },
         "six": {
             "hashes": [

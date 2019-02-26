@@ -24,7 +24,7 @@
 """d3.js Jupyter magic to execute d3 scripts in Jupyter notebooks."""
 
 
-__name__ = "d3"
+__name__ = "jupyter-d3"
 __version__ = "0.1.0"
 
 
