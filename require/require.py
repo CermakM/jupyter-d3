@@ -31,6 +31,8 @@ from IPython.core.display import display, Javascript
 
 
 _REQUIREJS_TEMPLATE = Template(dedent("""
+    'use strict';
+    
     require.config({
         paths: {
             $libs
@@ -95,6 +97,8 @@ class RequireJS(HasTraits):
 def link_css(stylesheet: str):
     """Link CSS stylesheet."""
     script = (
+        "'use strict';"
+        
         f"const href = \"{stylesheet}\";"
         """
         var link = document.createElement("link");
@@ -112,6 +116,8 @@ def link_css(stylesheet: str):
 def link_js(lib: str):
     """Link JavaScript library."""
     script = (
+        "'use strict';"
+        
         f"const src = \"{lib}\";"
         """
         var script = document.createElement("script");
@@ -124,32 +130,52 @@ def link_js(lib: str):
     return display(Javascript(script))
 
 
-def load_style(style: str):
+def load_style(style: str, attrs: dict):
     """Create new style element and add it to the page."""
-
     script = (
+        "'use strict';"
+        
         f"const style = `{style}`;"
+        f"const attributes = {attrs};"
         """
-        var e = document.createElement(\"style\");
-        $(e).html(`${style}`).attr('type', 'text/css');
+        let id = attributes.id;
+        let elem_exists = id ? $(`style#${id}`).length > 0 : false;
+        
+        var e = elem_exists ? document.querySelector(`style#${id}`)
+                            : document.createElement(\"style\");
+        
+        $(e).text(`${style}`).attr('type', 'text/css');
+        
+        Object.entries(attributes)
+            .forEach( ([attr, val]) => $(e).attr(attr, val) );
 
-        document.head.appendChild(e);
+        if (!elem_exists) document.head.appendChild(e);
         """
     )
 
     return display(Javascript(script))
 
 
-def load_script(script: str):
+def load_script(script: str, attrs: dict):
     """Create new script element and add it to the page."""
-
     script = (
+        "'use strict';"
+        
         f"const script = `{script}`;"
+        f"const attributes = {attrs};"
         """
-        var e = document.createElement(\"script\");
-        $(e).html(`${style}`).attr('type', 'text/javascript');
+        let id = attributes.id;
+        let elem_exists = id ? $(`script#${id}`).length > 0 : false;
+        
+        var e = elem_exists ? document.querySelector(`script#${id}`)
+                            : document.createElement(\"script\");
+        
+        $(e).text(`${script}`).attr('type', 'text/css');
+        
+        Object.entries(attributes)
+            .forEach( ([attr, val]) => $(e).attr(attr, val) );
 
-        document.head.appendChild(e);
+        if (!elem_exists) document.head.appendChild(e);
         """
     )
 

@@ -51,6 +51,8 @@ class D3Template(Template):
             [f"'{lib}'" for lib in require.loaded_libraries.keys()]
         )
         wrapped_script = """
+            'use strict';
+            
             try {{
                     
                 console.log("Checking required libraries: ", {libs});

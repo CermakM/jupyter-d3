@@ -28,6 +28,8 @@ __name__ = "require"
 __version__ = "0.1.0"
 
 
+import re
+
 from IPython.core.magic import cell_magic
 from IPython.core.magic import line_magic
 from IPython.core.magic import magics_class
@@ -80,16 +82,29 @@ class RequireJSMagic(Magics):
     @cell_magic
     def load_style(self, line: str, cell: str):
         """Create new style element and add it to the page."""
-        _ = line  # ignore
+        attributes: dict = self._parse_attributes(line)
 
-        return load_style(cell)
+        return load_style(cell, attributes)
 
     @cell_magic
     def load_script(self, line: str, cell: str):
         """Create new script element and add it to the page."""
-        _ = line  # ignore
+        attributes: dict = self._parse_attributes(line)
 
-        return load_script(cell)
+        return load_script(cell, attributes)
+
+    @staticmethod
+    def _parse_attributes(line: str) -> dict:
+        """Parse string to return element attributes."""
+        attr_def = map(
+            lambda s: re.sub(r"[\"'](.*)[\"']", r"\1", s),
+            line.split()
+        )
+
+        return {
+            attr: val
+            for attr, val in map(lambda s: s.split('='), attr_def)
+        }
 
 
 def load_ipython_extension(ipython):
