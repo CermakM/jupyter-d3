@@ -24,8 +24,7 @@
 """d3.js Jupyter magic to execute d3 scripts in Jupyter notebooks."""
 
 
-__name__ = "jupyter-d3"
-__version__ = "0.1.0"
+__version__ = "0.1.0-dev"
 
 
 from IPython.core.magic import cell_magic
@@ -35,7 +34,7 @@ from IPython.core.magic import magics_class
 from IPython.core.magic import Magics
 from IPython.core.magic import needs_local_scope
 
-from .d3 import d3
+from jupyter_require.core import execute_js
 from .utils import sanitize_namespace
 
 
@@ -86,14 +85,14 @@ class D3Magic(Magics):
         if cell is None:
             return self.lmagic(line, local_ns=local_ns)
 
-        return d3(cell, **sanitize_namespace(self.shell.user_ns))
+        return execute_js(cell, **sanitize_namespace(self.shell.user_ns))
 
     @cell_magic
     def cmagic(self, line, cell, **_kwargs):
         """Execute current cell as d3 script and displays output."""
         _ = line  # ignore
 
-        return d3(cell, **sanitize_namespace(self.shell.user_ns))
+        return execute_js(cell, **sanitize_namespace(self.shell.user_ns))
 
     @needs_local_scope
     @line_magic
@@ -102,7 +101,7 @@ class D3Magic(Magics):
         user_ns = self.shell.user_ns
         user_ns = user_ns.update(local_ns or dict())
 
-        return d3(line, **sanitize_namespace(user_ns))
+        return execute_js(line, **sanitize_namespace(user_ns))
 
 
 def load_ipython_extension(ipython):

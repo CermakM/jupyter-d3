@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1fa3f8c81d0fda855bc1b099a7acf3565578910ee963665447b37c60b839ef5a"
+            "sha256": "025647edc043fb59d727738957ec5ba4d4b73f334cb6c6abef7e81364ce434d4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -52,6 +52,11 @@
             ],
             "version": "==0.13.3"
         },
+        "jupyter-require": {
+            "editable": true,
+            "git": "https://github.com/CermakM/jupyter-require",
+            "ref": "44d9050d97e5b20f1d330e19ed017a846d59d61c"
+        },
         "parso": {
             "hashes": [
                 "sha256:4580328ae3f548b358f4901e38c0578229186835f0fa0846e47369796dd5bcc9",
@@ -95,11 +100,6 @@
                 "sha256:e8218dd399a61674745138520d0d4cf2621d7e032439341bc3f647bff125818d"
             ],
             "version": "==2.3.1"
-        },
-        "require": {
-            "editable": true,
-            "git": "https://github.com/CermakM/jupyter-require",
-            "ref": "2dde03c08770ac686fea6587443efe5fb341f318"
         },
         "six": {
             "hashes": [

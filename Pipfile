@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 ipython = "*"
-require = {editable = true, git = "https://github.com/CermakM/jupyter-require"}
+jupyter-require = {editable = true, ref = "master", git = "https://github.com/CermakM/jupyter-require"}
 
 [dev-packages]
 
