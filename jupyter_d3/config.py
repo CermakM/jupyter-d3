@@ -12,7 +12,7 @@ _DEFAULT_CONFIG = {
     'd3_hierarchy': 'https://d3js.org/d3-hierarchy.v1.min',
 }
 
-DefaultConfig = namedtuple('DefaultConfig', _DEFAULT_CONFIG.keys())
+DefaultD3Config = namedtuple('DefaultConfig', _DEFAULT_CONFIG.keys())
 
-defaults = DefaultConfig(**_DEFAULT_CONFIG)
+defaults = DefaultD3Config(**_DEFAULT_CONFIG)
 """Default configuration for d3."""
