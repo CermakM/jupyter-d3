@@ -33,6 +33,7 @@ from IPython.core.magic import needs_local_scope
 
 from jupyter_require import require
 from jupyter_require.core import execute_js
+from jupyter_require.core import execute_with_requirements
 from jupyter_tools.utils import sanitize_namespace
 
 from . import config
@@ -42,6 +43,22 @@ require.config({
     'd3': config.defaults.d3,
     'd3-hierarchy': config.defaults.d3_hierarchy
 })
+
+
+def activate_d3_syntax_highlight():
+    """Activates syntax highlighting for the d3 cells."""
+    script = """
+      codecell.CodeCell.options_default.highlight_modes['magic_text/javascript'] = {'reg':[/^%%d3/]};
+      
+      Jupyter.notebook.events.one('kernel_ready.Kernel', function(){
+          Jupyter.notebook.get_cells().map(function(cell){
+              if (cell.cell_type == 'code'){ cell.auto_highlight(); } }) ;
+      });
+      
+      console.log("JavaScript syntax highlight activated for '%%d3'.");
+    """
+
+    return execute_with_requirements(script, required={'notebook/js/codecell': 'notebook/js/codecell'})
 
 
 @magics_class
@@ -83,6 +100,11 @@ class D3Magic(Magics):
     ```
     """
 
+    def __init__(self, *args, **kwargs):
+        super(D3Magic, self).__init__(*args, **kwargs)
+        # activates highlight in %%d3 cells
+        activate_d3_syntax_highlight()
+
     @needs_local_scope
     @line_cell_magic
     def d3(self, line, cell=None, local_ns=None, **_kwargs):
@@ -91,14 +113,16 @@ class D3Magic(Magics):
         if cell is None:
             return self.lmagic(line, local_ns=local_ns)
 
-        return execute_js(cell, **sanitize_namespace(self.shell.user_ns))
+        return self.cmagic(line, cell, local_ns=local_ns)
 
     @cell_magic
     def cmagic(self, line, cell, **_kwargs):
         """Execute current cell as d3 script and displays output."""
         _ = line  # ignore
 
-        return execute_js(cell, **sanitize_namespace(self.shell.user_ns))
+        opts = config.defaults._asdict()
+
+        return execute_js(cell, **sanitize_namespace(self.shell.user_ns, options=opts))
 
     @needs_local_scope
     @line_magic
@@ -107,4 +131,6 @@ class D3Magic(Magics):
         user_ns = self.shell.user_ns
         user_ns = user_ns.update(local_ns or dict())
 
-        return execute_js(line, **sanitize_namespace(user_ns))
+        opts = config.defaults._asdict()
+
+        return execute_js(line, **sanitize_namespace(user_ns, options=opts))
