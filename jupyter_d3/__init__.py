@@ -24,9 +24,9 @@
 """d3.js Jupyter magic to execute d3 scripts in Jupyter notebooks."""
 
 
-from .magic import D3Magic
+from .__about__ import __version__
 
-__version__ = "0.1.0-dev"
+from .magic import D3Magic
 
 
 def load_ipython_extension(ipython):
