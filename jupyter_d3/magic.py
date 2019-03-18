@@ -32,17 +32,11 @@ from IPython.core.magic import Magics
 from IPython.core.magic import needs_local_scope
 
 from jupyter_require import require
-from jupyter_require.core import execute_js
 from jupyter_require.core import execute_with_requirements
+
 from jupyter_tools.utils import sanitize_namespace
 
 from . import config
-
-
-require.config({
-    'd3': config.defaults.d3,
-    'd3-hierarchy': config.defaults.d3_hierarchy
-})
 
 
 def activate_d3_syntax_highlight():
@@ -58,7 +52,7 @@ def activate_d3_syntax_highlight():
       console.log("JavaScript syntax highlight activated for '%%d3'.");
     """
 
-    return execute_with_requirements(script, required={'notebook/js/codecell': 'notebook/js/codecell'})
+    return execute_with_requirements(script, required=['notebook/js/codecell'])
 
 
 @magics_class
@@ -102,6 +96,12 @@ class D3Magic(Magics):
 
     def __init__(self, *args, **kwargs):
         super(D3Magic, self).__init__(*args, **kwargs)
+
+        # load required libs
+        require.config({
+            'd3': config.defaults.d3,
+        })
+
         # activates highlight in %%d3 cells
         activate_d3_syntax_highlight()
 
@@ -122,7 +122,8 @@ class D3Magic(Magics):
 
         opts = config.defaults._asdict()
 
-        return execute_js(cell, **sanitize_namespace(self.shell.user_ns, options=opts))
+        return execute_with_requirements(
+            cell, required=['d3'], **sanitize_namespace(self.shell.user_ns, options=opts))
 
     @needs_local_scope
     @line_magic
@@ -133,4 +134,5 @@ class D3Magic(Magics):
 
         opts = config.defaults._asdict()
 
-        return execute_js(line, **sanitize_namespace(user_ns, options=opts))
+        return execute_with_requirements(
+            line, required=['d3'], **sanitize_namespace(user_ns, options=opts))
